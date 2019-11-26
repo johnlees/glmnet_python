@@ -1,6 +1,25 @@
 import os, sys
 from setuptools import setup, find_packages
+from setuptools.command.build_py import build_py
 import subprocess
+
+class Compile(build_py):
+    """Custom build setup to help run needed shell commands
+
+    Inspired by https://stackoverflow.com/a/27953695/1237531"""
+    def run(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        source_path = os.path.join(dir_path, 'glmnet_python/GLMnet.f')
+        output_path = os.path.join(dir_path, 'glmnet_python/GLMnet.so')
+        compile = subprocess.check_output(['gfortran',
+            source_path,
+            '-fPIC',
+            '-fdefault-real-8',
+            '-shared',
+            '-o',
+            output_path
+        ])
+        build_py.run(self)
 
 setup(name='glmnet_python',
       version = '0.2.2',
@@ -22,5 +41,6 @@ setup(name='glmnet_python',
         'Programming Language :: Python :: 3.4',
         'Operating System :: Unix',
         ],
-      keywords='glm glmnet ridge lasso elasticnet'
-      )
+      keywords='glm glmnet ridge lasso elasticnet',
+      cmdclass={'build_py': Compile},
+)
