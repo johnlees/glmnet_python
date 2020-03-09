@@ -13,7 +13,7 @@ class GfortranExtension(Extension):
 class GfortranBuild(build_ext):
     def run(self):
         try:
-            out = subprocess.check_output(['gfortran', '--version'])
+            out = subprocess.check_output('${FC:-gfortran} --version', shell=True)
         except OSError:
             raise RuntimeError("gfortran must be installed to build the following extensions: " +
                                ", ".join(e.name for e in self.extensions))
@@ -32,7 +32,8 @@ class GfortranBuild(build_ext):
             os.makedirs(self.build_temp)
 
         env = os.environ.copy()
-        subprocess.check_call(['gfortran', ext.input] + gfortran_args, cwd=self.build_temp, env=env)
+        subprocess.check_call('${FC:-gfortran ' + " ".join([ext.input] + gfortran_args),
+                              cwd=self.build_temp, env=env, shell=True)
 
 setup(name='glmnet_python',
       version = '1.0.1',
