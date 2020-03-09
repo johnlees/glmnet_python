@@ -32,7 +32,7 @@ class GfortranBuild(build_ext):
             os.makedirs(self.build_temp)
 
         env = os.environ.copy()
-        subprocess.check_call('${FC:-gfortran ' + " ".join([ext.input] + gfortran_args),
+        subprocess.check_call('${FC:-gfortran} ' + " ".join([ext.input] + gfortran_args),
                               cwd=self.build_temp, env=env, shell=True)
 
 setup(name='glmnet_python',
